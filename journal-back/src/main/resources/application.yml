@@ -1,4 +1,30 @@
+spring:
+  profiles:
+    active: local
+
+---
+
+spring:
+  profiles: local
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost/journal_local
+    username: postgres
+    password: postgres
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    properties:
+      hibernate:
+        default_schema: journal
 server:
+  port: 8081
+jwt:
+  secret: techgeeknext
+  token_validity: 1 # in hours
+logging:
+  level:
+    root: INFO
 #  ssl:
 #    key-store: classpath:keystore.p12
 #    key-store-password: password
@@ -6,4 +32,25 @@ server:
 #    key-alias: tomcat
 #    key-password: password
 #  port: 8443
+
+---
+
+spring:
+  profiles: heroku
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DATABASE_URL}
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    properties:
+      hibernate:
+        default_schema: journal
+server:
   port: 8081
+jwt:
+  secret: techgeeknext
+  token_validity: 1 # in hours
+logging:
+  level:
+    root: INFO
