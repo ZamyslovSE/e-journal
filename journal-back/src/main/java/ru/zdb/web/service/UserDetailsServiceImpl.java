@@ -14,7 +14,7 @@ import ru.zdb.web.repository.UserRepository;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-	private UserService userService;
+	private final UserService userService;
 
 	@Autowired
 	public UserDetailsServiceImpl(UserService userService) {
@@ -26,5 +26,4 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		User user = userService.findUserByUsername(username);
 		return new UserDetailsImpl(user);
 	}
-
 }

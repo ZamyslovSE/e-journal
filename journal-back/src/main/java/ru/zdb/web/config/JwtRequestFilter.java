@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -23,15 +24,20 @@ import java.io.IOException;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-	@Autowired
-	private UserDetailsServiceImpl userDetailsServiceImpl;
+	private final UserDetailsService userDetailsService;
+
+	private final JwtTokenUtil jwtTokenUtil;
+
+	private final HandlerExceptionResolver jwtExceptionHandler;
 
 	@Autowired
-	private JwtTokenUtil jwtTokenUtil;
-
-	@Autowired
-	@Qualifier("handlerExceptionResolver")
-	private HandlerExceptionResolver jwtExceptionHandler;
+	public JwtRequestFilter(UserDetailsService userDetailsService,
+							JwtTokenUtil jwtTokenUtil,
+							@Qualifier("handlerExceptionResolver") HandlerExceptionResolver jwtExceptionHandler) {
+		this.userDetailsService = userDetailsService;
+		this.jwtTokenUtil = jwtTokenUtil;
+		this.jwtExceptionHandler = jwtExceptionHandler;
+	}
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -59,7 +65,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 		//Once we get the token validate it.
 		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-			UserDetails userDetails = this.userDetailsServiceImpl.loadUserByUsername(username);
+			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
 			// if token is valid configure Spring Security to manually set authentication
 			if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {

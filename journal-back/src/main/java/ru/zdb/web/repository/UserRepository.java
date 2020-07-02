@@ -8,7 +8,8 @@ import ru.zdb.web.model.User;
 import java.util.Collection;
 
 @Repository
-public interface UserRepository extends CrudRepository<User, Long> {
+public interface UserRepository extends CrudRepository<User, String> {
 //    Collection<User> findAll();
     User findUserByUsername(String username);
+//    User save(User user);
 }
